@@ -69,7 +69,7 @@
             {% set h = ((r % 86400) // 3600) | int %}
             {% set m = ((r % 3600) // 60) | int %}
             {% if d > 0 %}{{ d }}d {{ h }}h {{ m }}m{% else %}{{ h }}h {{ m }}m{% endif %}
-          {% elif current < (takeoff + timedelta(hours=25)) %}
+          {% elif current < (takeoff + timedelta(hours=18.25)) %}
             Santa is in the UK!
           {% else %}
             Santa has visited
