@@ -53,12 +53,19 @@ config/
 3. **Update your configuration.yaml**
    - Add the snippet from the provided `configuration.yaml` to your main configuration file
 
-4. **Add media files**
+4. **Create the input_text helper** (REQUIRED)
+   - Go to Settings → Devices & Services → Helpers
+   - Click "Create Helper" → Text
+   - Name it: `random_video_filename`
+   - Leave the initial value blank (the automation will populate it)
+   - This helper stores the current video filename for the CCTV loop
+
+5. **Add media files**
    - Create a `media/` folder inside your `www/` directory
    - Copy the provided video files (or add your own) to `www/media/`
    - Name your videos sequentially: `a1.mp4`, `a2.mp4`, `a3.mp4`, etc.
 
-5. **Restart Home Assistant**
+6. **Restart Home Assistant**
    - Restart Home Assistant to load the new configuration
 
 ## 🎥 Adding More Videos
