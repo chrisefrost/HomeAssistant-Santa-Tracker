@@ -1,0 +1,9 @@
+type: tile
+entity: sensor.santa_eta_uk
+name: UK Estimated Arrival
+icon: mdi:map-marker-path
+color: green
+vertical: true
+tap_action:
+  action: none
+features_position: bottom

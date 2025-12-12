@@ -1,0 +1,13 @@
+type: gauge
+entity: sensor.santa_mince_pies_eaten
+needle: true
+severity:
+  green: 0
+  yellow: 33333
+  red: 66666
+max: 100000
+tap_action:
+  action: none
+name: Fuel Breaks
+unit: Pies
+min: 0

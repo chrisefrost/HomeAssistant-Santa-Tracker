@@ -1,0 +1,8 @@
+type: tile
+entity: sensor.santa_flying_duration
+name: Flight Duration
+color: primary
+vertical: true
+tap_action:
+  action: none
+features_position: bottom

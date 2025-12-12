@@ -1,0 +1,9 @@
+type: markdown
+content: |2-
+    <video src="/local/media/{{ states('input_text.random_video_filename') }}" 
+           autoplay 
+           muted 
+           playsinline 
+           width="100%">
+  </video>
+title: 🔴 CCTV Feed
