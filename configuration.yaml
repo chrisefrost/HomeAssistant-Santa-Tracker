@@ -36,4 +36,10 @@ rest:
         unique_id: santa_current_location
         json_attributes:
           - location
-          
+
+input_text:
+  random_video_filename:
+    name: Random Video Filename
+    initial: a1.mp4
+    max: 20
+    
