@@ -2,6 +2,8 @@
 
 A festive Home Assistant integration that tracks Santa's journey on Christmas Eve using the Google Santa Tracker API, complete with AI-generated CCTV footage from the North Pole!
 
+![Santa Tracker Dashboard](images/santa-tracker-dashboard.png)
+
 ## ✨ Features
 
 - **Real-time Santa Tracking**: Live updates of Santa's current location using Google's Santa Tracker API
