@@ -1,4 +1,5 @@
 # 🎅 Santa Tracker for Home Assistant
+<a href="https://buymeacoffee.com/chrisefrost" target="_blank"><img src="images/bmc-button.png" alt="Buy Me A Coffee"></a>
 
 A festive Home Assistant integration that tracks Santa's journey on Christmas Eve using the Google Santa Tracker API, complete with AI-generated CCTV footage from the North Pole!
 
