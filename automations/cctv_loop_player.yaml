@@ -13,7 +13,6 @@
       data:
         entity_id: input_text.random_video_filename
         value: >
-#ALL FILES ARE a1.mp4 a2.mp4, a3.mp4 etc... Change below val to the last numbered video
-          {% set max_val = 3 %} 
+          {% set max_val = 3 %} # ALL FILES ARE a1.mp4 a2.mp4, a3.mp4 etc... Change below val to the last numbered video
           a{{ range(1, max_val + 1) | random }}.mp4
   mode: single

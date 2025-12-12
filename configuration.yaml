@@ -3,10 +3,10 @@
 # script:     !include_dir_merge_named scripts
 # scene:      !include_dir_merge_named scenes
 # template:   !include_dir_merge_list templates
-#ADD THIS TO YOUR CONFIG
+# ADD THIS TO YOUR CONFIG
 
 
-#Santa Tracker
+# Santa Tracker
 rest:
   - resource: "https://santa-api.appspot.com/info?client=web&language=en&fingerprint=&routeOffset=0&streamOffset=0"
     scan_interval: 60
@@ -37,4 +37,3 @@ rest:
         json_attributes:
           - location
           
-    
