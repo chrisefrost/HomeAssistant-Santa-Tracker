@@ -86,6 +86,10 @@ The included sample videos were created using GROK AI to generate CCTV-style foo
 - Mix and match different sources
 
 Just ensure they're in MP4 format and follow the naming convention (`a1.mp4`, `a2.mp4`, etc.).
+I also reduce size and remove audio from the videos GROK creates using;
+```yaml
+ffmpeg -i input.mp4 -an -vf scale=iw/2:-1 output.mp4
+```
 
 ## 📊 Data Tracked
 
@@ -105,6 +109,7 @@ Once installed and configured, the Santa Tracker will automatically become avail
 ## 🤝 Contributing
 
 Feel free to submit issues, fork the repository, and create pull requests for any improvements.
+Also there is a post on Reddit https://www.reddit.com/r/homeassistant/comments/1pkq695/santa_tracker/
 
 ## 📝 License
 
