@@ -1,0 +1,224 @@
+#ADD THIS TO YOUR TEMPLATES FOLDER
+
+
+- sensor:
+    - name: "Santa Flying Duration"
+      unique_id: santa_flying_duration
+      icon: mdi:clock-time-four-outline
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set duration = (current - takeoff).total_seconds() %}
+            {% set h = (duration // 3600) | int %}
+            {% set m = ((duration % 3600) // 60) | int %}
+            {{ h }}h {{ m }}m
+          {% else %}
+            Not flying yet
+          {% endif %}
+        {% else %}
+          Not flying yet
+        {% endif %}
+    
+    - name: "Santa Presents Delivered"
+      unique_id: santa_presents_delivered
+      icon: mdi:gift
+      unit_of_measurement: "presents"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {{ ((current - takeoff).total_seconds() * 77788) | int }}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Mince Pies Eaten"
+      unique_id: santa_mince_pies_eaten
+      icon: mdi:food-apple
+      unit_of_measurement: "pies"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {{ (((current - takeoff).total_seconds() / 60) * 58) | int }}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+
+    - name: "Santa ETA UK"
+      unique_id: santa_eta_uk
+      icon: mdi:map-marker-distance
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set uk_time = takeoff + timedelta(hours=18) %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current < uk_time %}
+            {% set r = (uk_time - current).total_seconds() %}
+            {% set d = (r // 86400) | int %}
+            {% set h = ((r % 86400) // 3600) | int %}
+            {% set m = ((r % 3600) // 60) | int %}
+            {% if d > 0 %}{{ d }}d {{ h }}h {{ m }}m{% else %}{{ h }}h {{ m }}m{% endif %}
+          {% elif current < (takeoff + timedelta(hours=25)) %}
+            Santa is in the UK!
+          {% else %}
+            Santa has visited
+          {% endif %}
+        {% else %}
+          Waiting for takeoff
+        {% endif %}
+    
+    - name: "Santa Journey Status"
+      unique_id: santa_journey_status
+      icon: mdi:information-outline
+      state: >
+        {% if states('sensor.santa_status') != 'OK' %}
+          API Unavailable
+        {% else %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% set journey_end = takeoff + timedelta(hours=25) %}
+          
+          {% if current < takeoff %}
+            Preparing for departure
+          {% elif current >= takeoff and current < journey_end %}
+            Santa is flying! 🎅
+          {% else %}
+            Journey complete
+          {% endif %}
+        {% endif %}
+    
+    - name: "Santa Current City"
+      unique_id: santa_current_city
+      icon: mdi:map-marker
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set duration = (current - takeoff).total_seconds() / 3600 %}
+            {% set city_index = (duration * 5) | int %}
+            {% set cities = [
+              'North Pole', 'Provideniya', 'Anadyr', 'Petropavlovsk', 'Vladivostok',
+              'Sapporo', 'Tokyo', 'Osaka', 'Seoul', 'Beijing',
+              'Shanghai', 'Hong Kong', 'Taipei', 'Manila', 'Hanoi',
+              'Bangkok', 'Singapore', 'Jakarta', 'Darwin', 'Brisbane',
+              'Sydney', 'Melbourne', 'Wellington', 'Auckland', 'Suva',
+              'Kolkata', 'Mumbai', 'Delhi', 'Karachi', 'Tehran',
+              'Dubai', 'Riyadh', 'Cairo', 'Nairobi', 'Cape Town',
+              'Johannesburg', 'Athens', 'Istanbul', 'Moscow', 'Helsinki',
+              'Stockholm', 'Oslo', 'Copenhagen', 'Berlin', 'Paris',
+              'Brussels', 'Amsterdam', 'London', 'Manchester', 'Edinburgh',
+              'Dublin', 'Reykjavik', 'Halifax', 'Montreal', 'Toronto',
+              'New York', 'Boston', 'Washington DC', 'Miami', 'Chicago',
+              'Denver', 'Los Angeles', 'San Francisco', 'Seattle', 'Vancouver',
+              'Anchorage', 'Honolulu', 'Mexico City', 'Panama City', 'Bogota',
+              'Lima', 'Rio de Janeiro', 'Sao Paulo', 'Buenos Aires', 'Santiago',
+              'North Pole'
+            ] %}
+            {% if city_index < cities|length %}
+              {{ cities[city_index] }}
+            {% else %}
+              North Pole
+            {% endif %}
+          {% else %}
+            North Pole
+          {% endif %}
+        {% else %}
+          North Pole
+        {% endif %}
+    
+    - name: "Santa Last Cities"
+      unique_id: santa_last_cities
+      icon: mdi:map-marker-left
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set duration = (current - takeoff).total_seconds() / 3600 %}
+            {% set city_index = (duration * 5) | int %}
+            {% set cities = [
+              'North Pole', 'Provideniya', 'Anadyr', 'Petropavlovsk', 'Vladivostok',
+              'Sapporo', 'Tokyo', 'Osaka', 'Seoul', 'Beijing',
+              'Shanghai', 'Hong Kong', 'Taipei', 'Manila', 'Hanoi',
+              'Bangkok', 'Singapore', 'Jakarta', 'Darwin', 'Brisbane',
+              'Sydney', 'Melbourne', 'Wellington', 'Auckland', 'Suva',
+              'Kolkata', 'Mumbai', 'Delhi', 'Karachi', 'Tehran',
+              'Dubai', 'Riyadh', 'Cairo', 'Nairobi', 'Cape Town',
+              'Johannesburg', 'Athens', 'Istanbul', 'Moscow', 'Helsinki',
+              'Stockholm', 'Oslo', 'Copenhagen', 'Berlin', 'Paris',
+              'Brussels', 'Amsterdam', 'London', 'Manchester', 'Edinburgh',
+              'Dublin', 'Reykjavik', 'Halifax', 'Montreal', 'Toronto',
+              'New York', 'Boston', 'Washington DC', 'Miami', 'Chicago',
+              'Denver', 'Los Angeles', 'San Francisco', 'Seattle', 'Vancouver',
+              'Anchorage', 'Honolulu', 'Mexico City', 'Panama City', 'Bogota',
+              'Lima', 'Rio de Janeiro', 'Sao Paulo', 'Buenos Aires', 'Santiago',
+              'North Pole'
+            ] %}
+            {% set start = [0, city_index - 5] | max %}
+            {% set end = city_index %}
+            {% if end > start %}
+              {{ cities[start:end] | join(' → ') }}
+            {% else %}
+              Just departed
+            {% endif %}
+          {% else %}
+            Not flying yet
+          {% endif %}
+        {% else %}
+          Not flying yet
+        {% endif %}
+    
+    - name: "Santa Next Cities"
+      unique_id: santa_next_cities
+      icon: mdi:map-marker-right
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set duration = (current - takeoff).total_seconds() / 3600 %}
+            {% set city_index = (duration * 5) | int %}
+            {% set cities = [
+              'North Pole', 'Provideniya', 'Anadyr', 'Petropavlovsk', 'Vladivostok',
+              'Sapporo', 'Tokyo', 'Osaka', 'Seoul', 'Beijing',
+              'Shanghai', 'Hong Kong', 'Taipei', 'Manila', 'Hanoi',
+              'Bangkok', 'Singapore', 'Jakarta', 'Darwin', 'Brisbane',
+              'Sydney', 'Melbourne', 'Wellington', 'Auckland', 'Suva',
+              'Kolkata', 'Mumbai', 'Delhi', 'Karachi', 'Tehran',
+              'Dubai', 'Riyadh', 'Cairo', 'Nairobi', 'Cape Town',
+              'Johannesburg', 'Athens', 'Istanbul', 'Moscow', 'Helsinki',
+              'Stockholm', 'Oslo', 'Copenhagen', 'Berlin', 'Paris',
+              'Brussels', 'Amsterdam', 'London', 'Manchester', 'Edinburgh',
+              'Dublin', 'Reykjavik', 'Halifax', 'Montreal', 'Toronto',
+              'New York', 'Boston', 'Washington DC', 'Miami', 'Chicago',
+              'Denver', 'Los Angeles', 'San Francisco', 'Seattle', 'Vancouver',
+              'Anchorage', 'Honolulu', 'Mexico City', 'Panama City', 'Bogota',
+              'Lima', 'Rio de Janeiro', 'Sao Paulo', 'Buenos Aires', 'Santiago',
+              'North Pole'
+            ] %}
+            {% set start = city_index + 1 %}
+            {% set end = [start + 5, cities|length] | min %}
+            {% if start < cities|length %}
+              {{ cities[start:end] | join(' → ') }}
+            {% else %}
+              Journey complete!
+            {% endif %}
+          {% else %}
+            Provideniya → Anadyr → Petropavlovsk → Vladivostok → Sapporo
+          {% endif %}
+        {% else %}
+          Provideniya → Anadyr → Petropavlovsk → Vladivostok → Sapporo
+        {% endif %}
+        

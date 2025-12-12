@@ -1,0 +1,40 @@
+# PRESUMING YOUR SETUP LOOKS SIMILAR TO BELOW 
+# automation: !include_dir_merge_list automations
+# script:     !include_dir_merge_named scripts
+# scene:      !include_dir_merge_named scenes
+# template:   !include_dir_merge_list templates
+#ADD THIS TO YOUR CONFIG
+
+
+#Santa Tracker
+rest:
+  - resource: "https://santa-api.appspot.com/info?client=web&language=en&fingerprint=&routeOffset=0&streamOffset=0"
+    scan_interval: 60
+    sensor:
+      - name: "Santa Status"
+        value_template: "{{ value_json.status }}"
+        unique_id: santa_status
+      
+      - name: "Santa Takeoff Time"
+        value_template: "{{ (value_json.takeoff / 1000) | timestamp_custom('%Y-%m-%d %H:%M:%S') }}"
+        unique_id: santa_takeoff_time
+      
+      - name: "Santa Takeoff Time Friendly"
+        value_template: "{{ (value_json.takeoff / 1000) | timestamp_custom('%-d %B %Y at %H:%M') }}"
+        unique_id: santa_takeoff_time_friendly
+      
+      - name: "Santa Now Time"
+        value_template: "{{ value_json.now }}"
+        unique_id: santa_now_time
+      
+      - name: "Santa Duration"
+        value_template: "{{ value_json.duration }}"
+        unique_id: santa_duration
+
+      - name: "Santa Current Location"
+        value_template: "{{ value_json.location if 'location' in value_json else 'North Pole' }}"
+        unique_id: santa_current_location
+        json_attributes:
+          - location
+          
+    
