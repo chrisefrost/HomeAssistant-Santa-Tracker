@@ -1,6 +1,3 @@
-#ADD THIS TO YOUR TEMPLATES FOLDER
-
-
 - sensor:
     - name: "Santa Flying Duration"
       unique_id: santa_flying_duration

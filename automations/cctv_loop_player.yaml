@@ -1,18 +1,16 @@
-#ADD THIS TO YOUR AUTOMATIONS FOLDER
-
-# cctv_loop_player.yaml
-- alias: CCTV Loop # <-- The name that will appear in the UI
-  id: cctv_video_loop_continuous # Unique ID for the system
+- alias: CCTV Loop
+  id: cctv_video_loop_continuous
   description: Cycles randomly through local CCTV videos every 8 seconds.
   trigger:
     - platform: time_pattern
-      seconds: /6 # Triggers every 8 seconds (6s video + 2s wait)
+      seconds: "/6"
   condition: []
   action:
     - service: input_text.set_value
-      data:
+      target:
         entity_id: input_text.random_video_filename
+      data:
         value: >
-          {% set max_val = 3 %} # ALL FILES ARE a1.mp4 a2.mp4, a3.mp4 etc... Change below val to the last numbered video
+          {% set max_val = 3 %}
           a{{ range(1, max_val + 1) | random }}.mp4
   mode: single
