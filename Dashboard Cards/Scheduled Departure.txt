@@ -1,9 +1,0 @@
-type: tile
-entity: sensor.santa_takeoff_time_friendly
-name: Scheduled Departure
-icon: mdi:airplane
-color: red
-vertical: true
-tap_action:
-  action: none
-features_position: bottom

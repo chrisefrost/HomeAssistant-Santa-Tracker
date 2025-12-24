@@ -1,4 +1,20 @@
 - sensor:
+    - name: "Santa Departure Status"
+      unique_id: santa_departure_status
+      icon: mdi:rocket-launch
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            Departed on time: {{ states('sensor.santa_takeoff_time_friendly') }}
+          {% else %}
+            Scheduled Departure: {{ states('sensor.santa_takeoff_time_friendly') }}
+          {% endif %}
+        {% else %}
+          Awaiting departure information
+        {% endif %}
+
     - name: "Santa Flying Duration"
       unique_id: santa_flying_duration
       icon: mdi:clock-time-four-outline
@@ -218,4 +234,358 @@
         {% else %}
           Provideniya → Anadyr → Petropavlovsk → Vladivostok → Sapporo
         {% endif %}
-        
+
+# Live updating sensors (update every second for rolling counter effect)
+- trigger:
+    - platform: time_pattern
+      seconds: "/1"
+  sensor:
+    - name: "Santa Presents Delivered Live"
+      unique_id: santa_presents_delivered_live
+      icon: mdi:gift
+      unit_of_measurement: "presents"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set delivered = (total_seconds * 91697.27) | int %}
+            {% if delivered > 8252753917 %}
+              8252753917
+            {% else %}
+              {{ delivered }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Mince Pies Eaten Live"
+      unique_id: santa_mince_pies_eaten_live
+      icon: mdi:food-apple
+      unit_of_measurement: "pies"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set pies = (total_seconds * 38.26) | int %}
+            {% if pies > 3443491 %}
+              3443491
+            {% else %}
+              {{ pies }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Miles Covered Live"
+      unique_id: santa_miles_covered_live
+      icon: mdi:map-marker-distance
+      unit_of_measurement: "miles"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set hours = (current - takeoff).total_seconds() / 3600 %}
+            {% set miles = (hours * 6725) | int %}
+            {% if miles > 168125 %}
+              168125
+            {% else %}
+              {{ miles }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Carrots Eaten Live"
+      unique_id: santa_carrots_eaten_live
+      icon: mdi:carrot
+      unit_of_measurement: "carrots"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set carrots = (total_seconds * 1.932) | int %}
+            {% if carrots > 173880 %}
+              173880
+            {% else %}
+              {{ carrots }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Chimneys Descended Live"
+      unique_id: santa_chimneys_descended_live
+      icon: mdi:home-analytics
+      unit_of_measurement: "chimneys"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set chimneys = (total_seconds * 204.06) | int %}
+            {% if chimneys > 18365284 %}
+              18365284
+            {% else %}
+              {{ chimneys }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Cookies Eaten Live"
+      unique_id: santa_cookies_eaten_live
+      icon: mdi:cookie
+      unit_of_measurement: "cookies"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set cookies = (total_seconds * 10.20) | int %}
+            {% if cookies > 918264 %}
+              918264
+            {% else %}
+              {{ cookies }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Milk Drunk Live"
+      unique_id: santa_milk_drunk_live
+      icon: mdi:cup
+      unit_of_measurement: "L"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set milk = (total_seconds * 0.255) | round(1) %}
+            {% if milk > 22957 %}
+              22957
+            {% else %}
+              {{ milk }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Beer Drunk Live"
+      unique_id: santa_beer_drunk_live
+      icon: mdi:beer
+      unit_of_measurement: "L"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set beer = (total_seconds * 0.102) | round(1) %}
+            {% if beer > 9183 %}
+              9183
+            {% else %}
+              {{ beer }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Wine Drunk Live"
+      unique_id: santa_wine_drunk_live
+      icon: mdi:glass-wine
+      unit_of_measurement: "L"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set wine = (total_seconds * 0.0191) | round(1) %}
+            {% if wine > 1721 %}
+              1721
+            {% else %}
+              {{ wine }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Port Drunk Live"
+      unique_id: santa_port_drunk_live
+      icon: mdi:glass-cocktail
+      unit_of_measurement: "L"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set port = (total_seconds * 0.0382) | round(1) %}
+            {% if port > 3443 %}
+              3443
+            {% else %}
+              {{ port }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Ho Ho Hos Live"
+      unique_id: santa_ho_ho_hos_live
+      icon: mdi:emoticon-happy
+      unit_of_measurement: "ho ho hos"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {{ ((current - takeoff).total_seconds() * 1.5) | int }}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Sleigh Speed Live"
+      unique_id: santa_sleigh_speed_live
+      icon: mdi:speedometer
+      unit_of_measurement: "mph"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {{ (6500 + (range(0, 451) | random)) | int }}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Homes Visited Live"
+      unique_id: santa_homes_visited_live
+      icon: mdi:home-group
+      unit_of_measurement: "homes"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set homes = (total_seconds * 1020.29) | int %}
+            {% if homes > 91826428 %}
+              91826428
+            {% else %}
+              {{ homes }}
+            {% endif %}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Sleigh Weight Live"
+      unique_id: santa_sleigh_weight_live
+      icon: mdi:weight
+      unit_of_measurement: "tonnes"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {% set total_seconds = (current - takeoff).total_seconds() %}
+            {% set delivered = (total_seconds * 91697.27) | int %}
+            {% if delivered > 8252753917 %}
+              {% set delivered = 8252753917 %}
+            {% endif %}
+            {% set percent_delivered = (delivered / 8252753917) %}
+            {% set weight = 350000 - (330000 * percent_delivered) %}
+            {{ weight | int }}
+          {% else %}
+            350000
+          {% endif %}
+        {% else %}
+          350000
+        {% endif %}
+    
+    - name: "Santa Altitude Live"
+      unique_id: santa_altitude_live
+      icon: mdi:airplane
+      unit_of_measurement: "feet"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current > takeoff %}
+            {{ (59500 + (range(0, 1001) | random)) | int }}
+          {% else %}
+            0
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
+    
+    - name: "Santa Journey Complete Live"
+      unique_id: santa_journey_complete_live
+      icon: mdi:percent
+      unit_of_measurement: "%"
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% set journey_end = takeoff + timedelta(hours=25) %}
+          {% if current < takeoff %}
+            0
+          {% elif current >= journey_end %}
+            100
+          {% else %}
+            {% set elapsed = (current - takeoff).total_seconds() %}
+            {% set total_duration = 90000 %}
+            {{ ((elapsed / total_duration) * 100) | round(1) }}
+          {% endif %}
+        {% else %}
+          0
+        {% endif %}
