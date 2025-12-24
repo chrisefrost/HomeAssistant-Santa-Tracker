@@ -34,93 +34,35 @@
           Not flying yet
         {% endif %}
     
-    - name: "Santa Presents Delivered"
-      unique_id: santa_presents_delivered
-      icon: mdi:gift
-      unit_of_measurement: "presents"
-      state: >
-        {% if states('sensor.santa_status') == 'OK' %}
-          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
-          {% set current = now().replace(tzinfo=None) %}
-          {% if current > takeoff %}
-            {{ ((current - takeoff).total_seconds() * 77788) | int }}
-          {% else %}
-            0
-          {% endif %}
-        {% else %}
-          0
-        {% endif %}
-    
-    - name: "Santa Mince Pies Eaten"
-      unique_id: santa_mince_pies_eaten
-      icon: mdi:food-apple
-      unit_of_measurement: "pies"
-      state: >
-        {% if states('sensor.santa_status') == 'OK' %}
-          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
-          {% set current = now().replace(tzinfo=None) %}
-          {% if current > takeoff %}
-            {{ (((current - takeoff).total_seconds() / 60) * 58) | int }}
-          {% else %}
-            0
-          {% endif %}
-        {% else %}
-          0
-        {% endif %}
-
-    - name: "Santa ETA UK"
-      unique_id: santa_eta_uk
-      icon: mdi:map-marker-distance
-      state: >
-        {% if states('sensor.santa_status') == 'OK' %}
-          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
-          {% set uk_time = takeoff + timedelta(hours=18) %}
-          {% set current = now().replace(tzinfo=None) %}
-          {% if current < uk_time %}
-            {% set r = (uk_time - current).total_seconds() %}
-            {% set d = (r // 86400) | int %}
-            {% set h = ((r % 86400) // 3600) | int %}
-            {% set m = ((r % 3600) // 60) | int %}
-            {% if d > 0 %}{{ d }}d {{ h }}h {{ m }}m{% else %}{{ h }}h {{ m }}m{% endif %}
-          {% elif current < (takeoff + timedelta(hours=18.25)) %}
-            Santa is in the UK!
-          {% else %}
-            Santa has visited
-          {% endif %}
-        {% else %}
-          Waiting for takeoff
-        {% endif %}
-    
-    - name: "Santa Journey Status"
-      unique_id: santa_journey_status
-      icon: mdi:information-outline
-      state: >
-        {% if states('sensor.santa_status') != 'OK' %}
-          API Unavailable
-        {% else %}
-          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
-          {% set current = now().replace(tzinfo=None) %}
-          {% set journey_end = takeoff + timedelta(hours=25) %}
-          
-          {% if current < takeoff %}
-            Preparing for departure
-          {% elif current >= takeoff and current < journey_end %}
-            Santa is flying! 🎅
-          {% else %}
-            Journey complete
-          {% endif %}
-        {% endif %}
-    
-    - name: "Santa Current City"
-      unique_id: santa_current_city
+    # Current Location from GPS or Simulated
+    - name: "Santa Current City Fixed"
+      unique_id: santa_current_city_fixed
       icon: mdi:map-marker
       state: >
-        {% if states('sensor.santa_status') == 'OK' %}
+        {% if states('sensor.santa_gps_location') not in ['unknown', 'unavailable', 'North Pole', ''] %}
+          {% set lat = states('sensor.santa_latitude') | float %}
+          {% set lon = states('sensor.santa_longitude') | float %}
+          {% if lat > 50 and lat < 60 and lon > -10 and lon < 2 %}
+            United Kingdom
+          {% elif lat > 40 and lat < 50 and lon > -10 and lon < 10 %}
+            Western Europe
+          {% elif lat > 35 and lat < 50 and lon > 10 and lon < 30 %}
+            Eastern Europe
+          {% elif lat > 30 and lat < 45 and lon > -130 and lon < -60 %}
+            United States
+          {% elif lat > 20 and lat < 40 and lon > 100 and lon < 145 %}
+            East Asia
+          {% elif lat > -40 and lat < -10 and lon > 110 and lon < 180 %}
+            Australia
+          {% else %}
+            Flying ({{ lat|round(1) }}°, {{ lon|round(1) }}°)
+          {% endif %}
+        {% elif states('sensor.santa_status') == 'OK' %}
           {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
           {% set current = now().replace(tzinfo=None) %}
           {% if current > takeoff %}
             {% set duration = (current - takeoff).total_seconds() / 3600 %}
-            {% set city_index = (duration * 5) | int %}
+            {% set city_index = (duration * 3.24) | int %}
             {% set cities = [
               'North Pole', 'Provideniya', 'Anadyr', 'Petropavlovsk', 'Vladivostok',
               'Sapporo', 'Tokyo', 'Osaka', 'Seoul', 'Beijing',
@@ -151,8 +93,9 @@
           North Pole
         {% endif %}
     
-    - name: "Santa Last Cities"
-      unique_id: santa_last_cities
+    # Simulated Previous Cities
+    - name: "Santa Last Cities Fixed"
+      unique_id: santa_last_cities_fixed
       icon: mdi:map-marker-left
       state: >
         {% if states('sensor.santa_status') == 'OK' %}
@@ -160,8 +103,8 @@
           {% set current = now().replace(tzinfo=None) %}
           {% if current > takeoff %}
             {% set duration = (current - takeoff).total_seconds() / 3600 %}
-            {% set city_index = (duration * 5) | int %}
-            {% set cities = [
+            {% set city_index = (duration * 3.24) | int %}
+            {% set cities_list = [
               'North Pole', 'Provideniya', 'Anadyr', 'Petropavlovsk', 'Vladivostok',
               'Sapporo', 'Tokyo', 'Osaka', 'Seoul', 'Beijing',
               'Shanghai', 'Hong Kong', 'Taipei', 'Manila', 'Hanoi',
@@ -182,19 +125,20 @@
             {% set start = [0, city_index - 5] | max %}
             {% set end = city_index %}
             {% if end > start %}
-              {{ cities[start:end] | join(' → ') }}
+              {{ cities_list[start:end] | join(' → ') }}
             {% else %}
               Just departed
             {% endif %}
           {% else %}
-            Not flying yet
+            Just departed from North Pole
           {% endif %}
         {% else %}
-          Not flying yet
+          Just departed from North Pole
         {% endif %}
     
-    - name: "Santa Next Cities"
-      unique_id: santa_next_cities
+    # Simulated Next Cities
+    - name: "Santa Next Cities Fixed"
+      unique_id: santa_next_cities_fixed
       icon: mdi:map-marker-right
       state: >
         {% if states('sensor.santa_status') == 'OK' %}
@@ -202,8 +146,8 @@
           {% set current = now().replace(tzinfo=None) %}
           {% if current > takeoff %}
             {% set duration = (current - takeoff).total_seconds() / 3600 %}
-            {% set city_index = (duration * 5) | int %}
-            {% set cities = [
+            {% set city_index = (duration * 3.24) | int %}
+            {% set cities_list = [
               'North Pole', 'Provideniya', 'Anadyr', 'Petropavlovsk', 'Vladivostok',
               'Sapporo', 'Tokyo', 'Osaka', 'Seoul', 'Beijing',
               'Shanghai', 'Hong Kong', 'Taipei', 'Manila', 'Hanoi',
@@ -222,17 +166,60 @@
               'North Pole'
             ] %}
             {% set start = city_index + 1 %}
-            {% set end = [start + 5, cities|length] | min %}
-            {% if start < cities|length %}
-              {{ cities[start:end] | join(' → ') }}
+            {% set end = [start + 5, cities_list|length] | min %}
+            {% if start < cities_list|length %}
+              {{ cities_list[start:end] | join(' → ') }}
             {% else %}
               Journey complete!
             {% endif %}
           {% else %}
-            Provideniya → Anadyr → Petropavlovsk → Vladivostok → Sapporo
+            Preparing for departure...
           {% endif %}
         {% else %}
-          Provideniya → Anadyr → Petropavlovsk → Vladivostok → Sapporo
+          Preparing for departure...
+        {% endif %}
+
+    - name: "Santa ETA UK"
+      unique_id: santa_eta_uk
+      icon: mdi:map-marker-distance
+      state: >
+        {% if states('sensor.santa_status') == 'OK' %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set uk_time = takeoff + timedelta(hours=14.5) %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% if current < uk_time %}
+            {% set r = (uk_time - current).total_seconds() %}
+            {% set d = (r // 86400) | int %}
+            {% set h = ((r % 86400) // 3600) | int %}
+            {% set m = ((r % 3600) // 60) | int %}
+            {% if d > 0 %}{{ d }}d {{ h }}h {{ m }}m{% else %}{{ h }}h {{ m }}m{% endif %}
+          {% elif current < (takeoff + timedelta(hours=14.75)) %}
+            Santa is in the UK!
+          {% else %}
+            Santa has visited
+          {% endif %}
+        {% else %}
+          Waiting for takeoff
+        {% endif %}
+    
+    - name: "Santa Journey Status"
+      unique_id: santa_journey_status
+      icon: mdi:information-outline
+      state: >
+        {% if states('sensor.santa_status') != 'OK' %}
+          API Unavailable
+        {% else %}
+          {% set takeoff = strptime(states('sensor.santa_takeoff_time'), '%Y-%m-%d %H:%M:%S') %}
+          {% set current = now().replace(tzinfo=None) %}
+          {% set journey_end = takeoff + timedelta(hours=25) %}
+          
+          {% if current < takeoff %}
+            Preparing for departure
+          {% elif current >= takeoff and current < journey_end %}
+            Santa is flying! 🎅
+          {% else %}
+            Journey complete
+          {% endif %}
         {% endif %}
 
 # Live updating sensors (update every second for rolling counter effect)
